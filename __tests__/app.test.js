@@ -35,10 +35,69 @@ describe("GET/api", () => {
 			.get("/api")
 			.expect(200)
 			.then(({ body }) => {
-				console.log(body.endpoints);
+				// console.log(body.endpoints);
 				const parsedText = JSON.parse(body.endpoints);
 				expect(parsedText).toEqual(endpointsSource);
 			});
+	});
+});
+
+describe("GET/api/articles/:article_id", () => {
+	it("returns a single article by its Id", () => {
+		return request(app)
+			.get("/api/articles/1")
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.article;
+				expect(article.article_id).toEqual(1);
+			});
+	});
+	it("returns any single article by its Id", () => {
+		return request(app)
+			.get("/api/articles/9")
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.article;
+				console.log(body);
+				expect(article.article_id).toEqual(9);
+			});
+	});
+	it("returns the correct properties", () => {
+		return request(app)
+			.get("/api/articles/3")
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.article;
+				console.log(article);
+				expect(typeof article.author).toBe("string");
+				expect(typeof article.title).toBe("string");
+				expect(typeof article.article_id).toBe("number");
+				expect(typeof article.body).toBe("string");
+				expect(typeof article.topic).toBe("string");
+				expect(typeof article.created_at).toBe("string");
+				expect(typeof article.votes).toBe("number");
+				expect(typeof article.article_img_url).toBe("string");
+			});
+	});
+	describe("errors for GET /api/articles/:article_id", () => {
+		test("returns a 400 bad request when passed incorrect id type", () => {
+			return request(app)
+				.get("/api/articles/not-a-number")
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid id type");
+				});
+		});
+		test("returns a 404 not found when passed an id that does not exist", () => {
+			return request(app)
+				.get("/api/articles/999")
+				.expect(404)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("id not found");
+				});
+		});
 	});
 });
 
