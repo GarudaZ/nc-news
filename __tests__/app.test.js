@@ -4,6 +4,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const { forEach } = require("../db/data/test-data/articles");
+const endpointsSource = require("../endpoints.json");
 
 beforeEach(() => {
 	return seed(data);
@@ -28,6 +29,19 @@ describe("GET/api/topics", () => {
 			});
 	});
 });
+describe("GET/api", () => {
+	it("returns the correct json file containing the endpoint details", () => {
+		return request(app)
+			.get("/api")
+			.expect(200)
+			.then(({ body }) => {
+				console.log(body.endpoints);
+				const parsedText = JSON.parse(body.endpoints);
+				expect(parsedText).toEqual(endpointsSource);
+			});
+	});
+});
+
 describe("404 error when passed an invalid endpoint", () => {
 	it("Responds with a 404 to invalid endpoint", () => {
 		return request(app)
