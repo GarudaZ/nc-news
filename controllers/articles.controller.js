@@ -22,7 +22,6 @@ const getArticlesBeId = (req, res, next) => {
 
 const getArticles = (req, res, next) => {
 	selectArticles().then((articlesData) => {
-		console.log(articlesData);
 		res.status(200).send(articlesData);
 	});
 };

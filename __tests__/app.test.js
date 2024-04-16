@@ -3,7 +3,6 @@ const request = require("supertest");
 const app = require("../app");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
-const { forEach } = require("../db/data/test-data/articles");
 const endpointsSource = require("../endpoints.json");
 
 beforeEach(() => {
@@ -110,7 +109,6 @@ describe("GET/api/articles", () => {
 		return request(app)
 			.get("/api/articles")
 			.then(({ body }) => {
-				console.log(body);
 				body.forEach((article) => {
 					expect(typeof article.author).toBe("string");
 					expect(typeof article.title).toBe("string");
@@ -133,12 +131,88 @@ describe("GET/api/articles", () => {
 	});
 	it("returns the correct comment count", () => {
 		return request(app)
-		.get("/api/articles")
-		.then(({ body }) => {
-			expect(body[0].comment_count).toBe(2)
-			expect(body[12].comment_count).toBe(0)
-		})
-	})
+			.get("/api/articles")
+			.then(({ body }) => {
+				expect(body[0].comment_count).toBe(2);
+				expect(body[12].comment_count).toBe(0);
+			});
+	});
+});
+
+describe("GET/api/articles/:article_id/comments", () => {
+	it("returns an empty array for a valid article with no comments", () => {
+		return request(app)
+			.get("/api/articles/11/comments")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.comments.length).toEqual(0);
+			});
+	});
+	it("returns an array of comments for a valid article", () => {
+		return request(app)
+			.get("/api/articles/3/comments")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.comments.length).toEqual(2);
+			});
+	});
+	it("returns the correct properties", () => {
+		return request(app)
+			.get("/api/articles/1/comments")
+			.expect(200)
+			.then(({ body }) => {
+				body.comments.forEach((comment) => {
+					expect(typeof comment.comment_id).toBe("number");
+					expect(typeof comment.votes).toBe("number");
+					expect(typeof comment.created_at).toBe("string");
+					expect(typeof comment.author).toBe("string");
+					expect(typeof comment.body).toBe("string");
+					expect(typeof comment.article_id).toBe("number");
+				});
+			});
+	});
+	it("returns the correct properties values", () => {
+		return request(app)
+			.get("/api/articles/6/comments")
+			.expect(200)
+			.then(({ body }) => {
+				const comment = body.comments[0];
+				expect(comment.comment_id).toBe(16);
+				expect(comment.votes).toBe(1);
+				expect(typeof comment.created_at).toBe("string");
+				expect(comment.author).toBe("butter_bridge");
+				expect(comment.body).toBe("This is a bad article name");
+				expect(comment.article_id).toBe(6);
+			});
+	});
+	it("returns comments sorted to have most recent first, created_at: desc", () => {
+		return request(app)
+			.get("/api/articles/1/comments")
+			.then(({ body }) => {
+				console.log(body);
+				expect(body.comments).toBeSortedBy("created_at", { descending: true });
+			});
+	});
+	describe("errors for GET /api/articles/:article_id/comments", () => {
+		test("returns a 400 bad request when passed incorrect id type", () => {
+			return request(app)
+				.get("/api/articles/not-a-number/comments")
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid id type");
+				});
+		});
+		test("returns a 404 not found when passed an id that does not exist", () => {
+			return request(app)
+				.get("/api/articles/999/comments")
+				.expect(404)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("id not found");
+				});
+		});
+	});
 });
 
 describe("404 error when passed an invalid endpoint", () => {
