@@ -35,9 +35,7 @@ describe("GET/api", () => {
 			.get("/api")
 			.expect(200)
 			.then(({ body }) => {
-				// console.log(body.endpoints);
-				const parsedText = JSON.parse(body.endpoints);
-				expect(parsedText).toEqual(endpointsSource);
+				expect(body).toEqual(endpointsSource);
 			});
 	});
 });
@@ -58,7 +56,6 @@ describe("GET/api/articles/:article_id", () => {
 			.expect(200)
 			.then(({ body }) => {
 				const article = body.article;
-				console.log(body);
 				expect(article.article_id).toEqual(9);
 			});
 	});
@@ -68,7 +65,6 @@ describe("GET/api/articles/:article_id", () => {
 			.expect(200)
 			.then(({ body }) => {
 				const article = body.article;
-				console.log(article);
 				expect(typeof article.author).toBe("string");
 				expect(typeof article.title).toBe("string");
 				expect(typeof article.article_id).toBe("number");
@@ -99,6 +95,50 @@ describe("GET/api/articles/:article_id", () => {
 				});
 		});
 	});
+});
+
+describe("GET/api/articles", () => {
+	it("returns all articles", () => {
+		return request(app)
+			.get("/api/articles")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.length).toEqual(13);
+			});
+	});
+	it("all articles are returned with the correct properties", () => {
+		return request(app)
+			.get("/api/articles")
+			.then(({ body }) => {
+				console.log(body);
+				body.forEach((article) => {
+					expect(typeof article.author).toBe("string");
+					expect(typeof article.title).toBe("string");
+					expect(typeof article.article_id).toBe("number");
+					expect(typeof article.topic).toBe("string");
+					expect(typeof article.body).toBe("undefined");
+					expect(typeof article.created_at).toBe("string");
+					expect(typeof article.votes).toBe("number");
+					expect(typeof article.article_img_url).toBe("string");
+					expect(typeof article.comment_count).toBe("number");
+				});
+			});
+	});
+	it("returns articles sorted in descending age order", () => {
+		return request(app)
+			.get("/api/articles")
+			.then(({ body }) => {
+				expect(body).toBeSortedBy("created_at", { descending: true });
+			});
+	});
+	it("returns the correct comment count", () => {
+		return request(app)
+		.get("/api/articles")
+		.then(({ body }) => {
+			expect(body[0].comment_count).toBe(2)
+			expect(body[12].comment_count).toBe(0)
+		})
+	})
 });
 
 describe("404 error when passed an invalid endpoint", () => {

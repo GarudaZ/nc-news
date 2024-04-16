@@ -3,9 +3,7 @@ const fs = require("fs/promises");
 const endpoints = require("../endpoints.json");
 
 const readEndpoints = () => {
-	return fs.readFile("./endpoints.json", "utf-8").then((endpointDesc) => {
-		return endpointDesc;
-	});
+	return endpoints;
 };
 
 module.exports = readEndpoints;

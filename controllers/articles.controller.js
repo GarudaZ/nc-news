@@ -1,5 +1,9 @@
 const { lock } = require("../app");
-const selectArticleById = require("../models/articles.model");
+const articles = require("../db/data/test-data/articles");
+const {
+	selectArticleById,
+	selectArticles,
+} = require("../models/articles.model");
 
 const getArticlesBeId = (req, res, next) => {
 	const { article_id } = req.params;
@@ -16,4 +20,11 @@ const getArticlesBeId = (req, res, next) => {
 		});
 };
 
-module.exports = getArticlesBeId;
+const getArticles = (req, res, next) => {
+	selectArticles().then((articlesData) => {
+		console.log(articlesData);
+		res.status(200).send(articlesData);
+	});
+};
+
+module.exports = { getArticlesBeId, getArticles };
