@@ -189,12 +189,11 @@ describe("GET/api/articles/:article_id/comments", () => {
 		return request(app)
 			.get("/api/articles/1/comments")
 			.then(({ body }) => {
-				console.log(body);
 				expect(body.comments).toBeSortedBy("created_at", { descending: true });
 			});
 	});
 	describe("errors for GET /api/articles/:article_id/comments", () => {
-		test("returns a 400 bad request when passed incorrect id type", () => {
+		it("returns a 400 bad request when passed incorrect id type", () => {
 			return request(app)
 				.get("/api/articles/not-a-number/comments")
 				.expect(400)
@@ -203,13 +202,92 @@ describe("GET/api/articles/:article_id/comments", () => {
 					expect(message).toBe("invalid id type");
 				});
 		});
-		test("returns a 404 not found when passed an id that does not exist", () => {
+		it("returns a 404 not found when passed an id that does not exist", () => {
 			return request(app)
 				.get("/api/articles/999/comments")
 				.expect(404)
 				.then(({ body }) => {
 					const { message } = body;
 					expect(message).toBe("id not found");
+				});
+		});
+	});
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+	it("POST 201 status code, inserts new comment and responds with posted comment", () => {
+		const newComment = {
+			username: "butter_bridge",
+			body: "This is a new comment",
+		};
+		return request(app)
+			.post("/api/articles/6/comments")
+			.send(newComment)
+			.expect(201)
+			.then(({ body }) => {
+				const comment = body.new_comment[0];
+				expect(comment.comment_id).toBe(19);
+				expect(comment.votes).toBe(0);
+				expect(typeof comment.created_at).toBe("string");
+				expect(comment.author).toEqual(newComment.username);
+				expect(comment.body).toEqual(newComment.body);
+				expect(comment.article_id).toBe(6);
+			});
+	});
+	describe("errors for POST /api/articles/:article_id/comments", () => {
+		it("returns a 400 bad request when passed incorrect id type", () => {
+			const newComment = {
+				username: "butter_bridge",
+				body: "This is a new comment",
+			};
+			return request(app)
+				.post("/api/articles/not-a-number/comments")
+				.send(newComment)
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid id type");
+				});
+		});
+		it("returns a 404 not found when passed an id that does not exist", () => {
+			const newComment = {
+				username: "butter_bridge",
+				body: "This is a new comment",
+			};
+			return request(app)
+				.post("/api/articles/999/comments")
+				.send(newComment)
+				.expect(404)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("id not found");
+				});
+		});
+		it("returns a 400 bad request passed request body missing fields", () => {
+			const newComment = {
+				username: "butter_bridge",
+			};
+			return request(app)
+				.post("/api/articles/6/comments")
+				.send(newComment)
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("400 Bad Request: body missing fields");
+				});
+		});
+		it("returns a 400 bad request when passed a request body with an invalid username", () => {
+			const newComment = {
+				username: "new_user",
+				body: "This is a new comment",
+			};
+			return request(app)
+				.post("/api/articles/6/comments")
+				.send(newComment)
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid username");
 				});
 		});
 	});
