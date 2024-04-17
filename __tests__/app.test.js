@@ -439,7 +439,6 @@ describe("DELETE /api/comments/:comment_id", () => {
 				.delete("/api/comments/999")
 				.expect(404)
 				.then(({ body }) => {
-					console.log(body);
 					const { message } = body;
 					expect(message).toBe("resource not found");
 				});
