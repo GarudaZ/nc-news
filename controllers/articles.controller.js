@@ -1,8 +1,10 @@
 const { lock } = require("../app");
+const { articleData } = require("../db/data/test-data");
 const articles = require("../db/data/test-data/articles");
 const {
 	selectArticleById,
 	selectArticles,
+	updateArticleVotes,
 } = require("../models/articles.model");
 
 const getArticlesBeId = (req, res, next) => {
@@ -26,4 +28,27 @@ const getArticles = (req, res, next) => {
 	});
 };
 
-module.exports = { getArticlesBeId, getArticles };
+const patchArticleVotesById = (req, res, next) => {
+	const { article_id } = req.params;
+	const { inc_votes } = req.body;
+	if (!inc_votes) {
+		res.status(400).send({ message: "400 Bad Request: body missing fields" });
+	}
+	if (typeof inc_votes !== "number") {
+		res.status(400).send({ message: "invalid request body" });
+	}
+
+	selectArticleById(article_id)
+		.then((articleData) => {
+			const newVotes = inc_votes + articleData.votes;
+			return updateArticleVotes(article_id, newVotes);
+		})
+		.then((updatedArticle) => {
+			res.status(200).send({ updatedArticle });
+		})
+		.catch((err) => {
+			next(err);
+		});
+};
+
+module.exports = { getArticlesBeId, getArticles, patchArticleVotesById };
