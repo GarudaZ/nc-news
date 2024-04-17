@@ -415,6 +415,38 @@ describe("PATCH /api/articles/:article_id", () => {
 	});
 });
 
+describe("DELETE /api/comments/:comment_id", () => {
+	it("responds with a 204 and no content", () => {
+		return request(app)
+			.delete("/api/comments/1")
+			.expect(204)
+			.then(({ body }) => {
+				expect(body).toEqual({});
+			});
+	});
+	describe("errors for DELETE /api/comments/:comment_id", () => {
+		it("returns a 400 bad request when passed incorrect id type", () => {
+			return request(app)
+				.delete("/api/comments/not-a-number")
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid id type");
+				});
+		});
+		it("returns a 404 not found when passed a comment id that does not exist", () => {
+			return request(app)
+				.delete("/api/comments/999")
+				.expect(404)
+				.then(({ body }) => {
+					console.log(body);
+					const { message } = body;
+					expect(message).toBe("resource not found");
+				});
+		});
+	});
+});
+
 describe("404 error when passed an invalid endpoint", () => {
 	it("Responds with a 404 to invalid endpoint", () => {
 		return request(app)

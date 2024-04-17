@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-const { selectArticleById } = require("./articles.model");
 
 const selectComments = (article_id) => {
 	return db
@@ -28,4 +27,12 @@ const insertComment = (id, postBody) => {
 		});
 };
 
-module.exports = { selectComments, insertComment };
+const deleteComment = (id) => {
+	return db.query(
+		`DELETE FROM comments
+	WHERE comment_id=$1`,
+		[id]
+	);
+};
+
+module.exports = { selectComments, insertComment, deleteComment };

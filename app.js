@@ -4,6 +4,7 @@ const getEndpoints = require("./controllers/endpoint.controller");
 const {
 	getComments,
 	postComment,
+	deleteCommentById,
 } = require("./controllers/comments.controllers");
 const {
 	getArticlesBeId,
@@ -28,6 +29,8 @@ app.get("/api/articles/:article_id/comments", getComments);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch("/api/articles/:article_id", patchArticleVotesById);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.use((err, req, res, next) => {
 	if (err.code === "22P02") {
