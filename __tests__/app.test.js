@@ -4,6 +4,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const endpointsSource = require("../endpoints.json");
+const selectUsers = require("../models/users.models");
 
 beforeEach(() => {
 	return seed(data);
@@ -211,6 +212,28 @@ describe("GET/api/articles/:article_id/comments", () => {
 					expect(message).toBe("id not found");
 				});
 		});
+	});
+});
+
+describe("GET /api/users", () => {
+	it("returns an array of all users", () => {
+		return request(app)
+			.get("/api/users")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.users.length).toEqual(4);
+			});
+	});
+	it("all articles are returned with the correct properties", () => {
+		return request(app)
+			.get("/api/users")
+			.then(({ body }) => {
+				body.users.forEach((user) => {
+					expect(typeof user.username).toBe("string");
+					expect(typeof user.name).toBe("string");
+					expect(typeof user.avatar_url).toBe("string");
+				});
+			});
 	});
 });
 

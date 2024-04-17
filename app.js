@@ -1,6 +1,7 @@
 const express = require("express");
 const getTopics = require("./controllers/topics.controllers");
 const getEndpoints = require("./controllers/endpoint.controller");
+const getUsers = require("./controllers/users.controllers");
 const {
 	getComments,
 	postComment,
@@ -25,6 +26,8 @@ app.get("/api/articles/:article_id", getArticlesBeId);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getComments);
+
+app.get("/api/users", getUsers);
 
 app.post("/api/articles/:article_id/comments", postComment);
 
