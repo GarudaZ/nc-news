@@ -293,6 +293,128 @@ describe("POST /api/articles/:article_id/comments", () => {
 	});
 });
 
+describe("PATCH /api/articles/:article_id", () => {
+	it("increases the votes for the relevant article and returns the updated article", () => {
+		const newCount = {
+			inc_votes: 3,
+		};
+		return request(app)
+			.patch("/api/articles/6")
+			.send(newCount)
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.updatedArticle;
+				expect(article.title).toBe("A");
+				expect(article.author).toBe("icellusedkars");
+				expect(article.article_id).toBe(6);
+				expect(article.topic).toBe("mitch");
+				expect(article.body).toBe("Delicious tin of cat food");
+				expect(typeof article.created_at).toBe("string");
+				expect(article.votes).toBe(3);
+				expect(article.article_img_url).toBe(
+					"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+				);
+			});
+	});
+	it("decreases the votes for the relevant article and returns the updated article", () => {
+		const newCount = {
+			inc_votes: -100,
+		};
+		return request(app)
+			.patch("/api/articles/1")
+			.send(newCount)
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.updatedArticle;
+				expect(article.title).toBe("Living in the shadow of a great man");
+				expect(article.author).toBe("butter_bridge");
+				expect(article.article_id).toBe(1);
+				expect(article.topic).toBe("mitch");
+				expect(article.body).toBe("I find this existence challenging");
+				expect(typeof article.created_at).toBe("string");
+				expect(article.votes).toBe(0);
+				expect(article.article_img_url).toBe(
+					"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+				);
+			});
+	});
+	it("patches successfully when the body contains unnecessary keys", () => {
+		const newCount = {
+			inc_votes: -100,
+			other_key: "unecessary",
+		};
+		return request(app)
+			.patch("/api/articles/1")
+			.send(newCount)
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.updatedArticle;
+				expect(article.title).toBe("Living in the shadow of a great man");
+				expect(article.author).toBe("butter_bridge");
+				expect(article.article_id).toBe(1);
+				expect(article.topic).toBe("mitch");
+				expect(article.body).toBe("I find this existence challenging");
+				expect(typeof article.created_at).toBe("string");
+				expect(article.votes).toBe(0);
+				expect(article.article_img_url).toBe(
+					"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+				);
+			});
+	});
+	describe("errors for PATCH /api/articles/:article_id", () => {
+		it("returns a 400 bad request when passed incorrect id type", () => {
+			const newCount = {
+				inc_votes: -100,
+			};
+			return request(app)
+				.patch("/api/articles/not-a-number")
+				.send(newCount)
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid id type");
+				});
+		});
+		it("returns a 404 not found when passed an id that does not exist", () => {
+			const newCount = {
+				inc_votes: -100,
+			};
+			return request(app)
+				.patch("/api/articles/999")
+				.send(newCount)
+				.expect(404)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("id not found");
+				});
+		});
+		it("returns a 400 bad request passed request body missing an inc_votes field", () => {
+			const newCount = {};
+			return request(app)
+				.patch("/api/articles/6")
+				.send(newCount)
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("400 Bad Request: body missing fields");
+				});
+		});
+		it("returns a 400 bad request when passed a request body with an invalid votes change", () => {
+			const newCount = {
+				inc_votes: "not-a-number",
+			};
+			return request(app)
+				.patch("/api/articles/6")
+				.send(newCount)
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid request body");
+				});
+		});
+	});
+});
+
 describe("404 error when passed an invalid endpoint", () => {
 	it("Responds with a 404 to invalid endpoint", () => {
 		return request(app)

@@ -34,4 +34,19 @@ const selectArticles = () => {
 		});
 };
 
-module.exports = { selectArticleById, selectArticles };
+const updateArticleVotes = (id, newVotes) => {
+	return db
+		.query(
+			`UPDATE articles 
+	SET
+	votes = $2  
+	WHERE article_id=$1
+	RETURNING *;`,
+			[id, newVotes]
+		)
+		.then(({ rows }) => {
+			return rows[0];
+		});
+};
+
+module.exports = { selectArticleById, selectArticles, updateArticleVotes };
