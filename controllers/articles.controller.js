@@ -6,6 +6,7 @@ const {
 	selectArticles,
 	updateArticleVotes,
 } = require("../models/articles.model");
+const { checkExists } = require("../db/seeds/utils");
 
 const getArticlesBeId = (req, res, next) => {
 	const { article_id } = req.params;
@@ -23,9 +24,17 @@ const getArticlesBeId = (req, res, next) => {
 };
 
 const getArticles = (req, res, next) => {
-	selectArticles().then((articlesData) => {
-		res.status(200).send(articlesData);
-	});
+	const { topic } = req.query;
+	return (
+		selectArticles(topic)
+			.then((articlesData) => {
+				res.status(200).send(articlesData);
+			})
+			// })
+			.catch((err) => {
+				next(err);
+			})
+	);
 };
 
 const patchArticleVotesById = (req, res, next) => {

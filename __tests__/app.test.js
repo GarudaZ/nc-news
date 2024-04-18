@@ -138,6 +138,34 @@ describe("GET/api/articles", () => {
 				expect(body[12].comment_count).toBe(0);
 			});
 	});
+	describe("testing for topic query", () => {
+		it("returns filtered articles when passed with a topic query", () => {
+			return request(app)
+				.get("/api/articles?topic=mitch")
+				.expect(200)
+				.then(({ body }) => {
+					expect(body.length).toEqual(12);
+				});
+		});
+		it("returns an empty array when passed with a valid topic with no articles", () => {
+			return request(app)
+				.get("/api/articles?topic=paper")
+				.then(({ body }) => {
+					expect(body.length).toEqual(0);
+				});
+		});
+		describe("errors for topic query", () => {
+			it("returns a 400 for an invalid topic", () => {
+				return request(app)
+					.get("/api/articles?topic=notatopic")
+					.expect(404)
+					.then(({ body }) => {
+						const { message } = body;
+						expect(message).toBe("resource not found");
+					});
+			});
+		});
+	});
 });
 
 describe("GET/api/articles/:article_id/comments", () => {

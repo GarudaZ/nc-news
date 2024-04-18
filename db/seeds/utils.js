@@ -25,8 +25,10 @@ exports.formatComments = (comments, idLookup) => {
 };
 
 exports.checkExists = (table, column, value) => {
+	if (value === undefined) {
+		return Promise.resolve();
+	}
 	const queryStr = format(`SELECT * FROM %I WHERE %I= $1;`, table, column);
-
 	return db.query(queryStr, [value]).then(({ rows }) => {
 		if (rows.length === 0) {
 			return Promise.reject({ status: 404, message: "resource not found" });
