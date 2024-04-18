@@ -25,17 +25,18 @@ Postgres - 8.11.5
 
 ### Dependencies
 
-    	dotenv: 16.4.5,
-    	express: 4.19.2,
-    	pg: 8.11.5,
-    	pg-format: 1.0.4
+- dotenv: 16.4.5,
+- express: 4.19.2,
+- pg: 8.11.5,
+- pg-format: 1.0.4
 
-    Developer:
-    	husky: 8.0.2,
-    	jest: 27.5.1",
-    	jest-extended: 2.0.0,
-    	jest-sorted: 1.0.15,
-    	supertest: 6.3.4
+Developer:
+
+- husky: 8.0.2,
+- jest: 27.5.1",
+- jest-extended: 2.0.0,
+- jest-sorted: 1.0.15,
+- supertest: 6.3.4
 
 ### Testing
 
