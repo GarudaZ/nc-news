@@ -8,7 +8,7 @@ const {
 } = require("../models/articles.model");
 const { checkExists } = require("../db/seeds/utils");
 
-const getArticlesBeId = (req, res, next) => {
+const getArticlesById = (req, res, next) => {
 	const { article_id } = req.params;
 
 	selectArticleById(article_id)
@@ -60,4 +60,4 @@ const patchArticleVotesById = (req, res, next) => {
 		});
 };
 
-module.exports = { getArticlesBeId, getArticles, patchArticleVotesById };
+module.exports = { getArticlesById, getArticles, patchArticleVotesById };

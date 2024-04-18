@@ -75,6 +75,24 @@ describe("GET/api/articles/:article_id", () => {
 				expect(typeof article.article_img_url).toBe("string");
 			});
 	});
+	it("returns the comment_count property with the correct count", () => {
+		return request(app)
+			.get("/api/articles/3")
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.article;
+				expect(article.comment_count).toBe(2);
+			});
+	});
+	it("returns the comment_count property with the correct count when there are no comments", () => {
+		return request(app)
+			.get("/api/articles/2")
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.article;
+				expect(article.comment_count).toBe(0);
+			});
+	});
 	describe("errors for GET /api/articles/:article_id", () => {
 		test("returns a 400 bad request when passed incorrect id type", () => {
 			return request(app)
