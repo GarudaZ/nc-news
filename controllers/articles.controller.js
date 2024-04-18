@@ -1,12 +1,9 @@
-const { lock } = require("../app");
-const { articleData } = require("../db/data/test-data");
 const articles = require("../db/data/test-data/articles");
 const {
 	selectArticleById,
 	selectArticles,
 	updateArticleVotes,
 } = require("../models/articles.model");
-const { checkExists } = require("../db/seeds/utils");
 
 const getArticlesById = (req, res, next) => {
 	const { article_id } = req.params;
