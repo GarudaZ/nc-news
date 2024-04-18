@@ -8,7 +8,7 @@ This express app provides a web api for accessing the NC_news database. It inclu
 
 ## Setup
 
-Clone the projext repo from github at:https://github.com/GarudaZ/nc-news
+Clone the project repo from github at:https://github.com/GarudaZ/nc-news
 
 All dependencies can be installed using 'npm install' from within the project folder, package details are below.
 
@@ -40,7 +40,7 @@ Developer:
 
 ### Testing
 
-Tests can be run using the script: 'npm test'. There are separate test files for the app and the utilites.
+Tests can be run using the script: 'npm test'. There are separate test files for the app and the utilities.
 
 ### Seeding
 
