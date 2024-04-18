@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkExists } = require("../db/seeds/utils");
 
 const selectArticleById = (id) => {
 	return db
@@ -11,10 +12,9 @@ const selectArticleById = (id) => {
 		});
 };
 
-const selectArticles = () => {
-	return db
-		.query(
-			`SELECT 
+const selectArticles = (topic) => {
+	// console.log(topic);
+	let queryStr = `SELECT 
 	articles.author,
 	articles.title,
 	articles.article_id,
@@ -26,9 +26,19 @@ const selectArticles = () => {
 	FROM articles
 	LEFT JOIN comments
 	ON articles.article_id = comments.article_id
-	GROUP BY articles.article_id
-	ORDER BY created_at DESC;`
-		)
+	`;
+
+	if (topic) {
+		queryStr += ` WHERE articles.topic= '${topic}' `;
+	}
+
+	queryStr += `GROUP BY articles.article_id
+	ORDER BY created_at DESC`;
+
+	return checkExists("topics", "slug", topic) //could move to controller
+		.then(() => {
+			return db.query(queryStr + `;`);
+		})
 		.then(({ rows }) => {
 			return rows;
 		});
