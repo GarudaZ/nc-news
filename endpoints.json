@@ -74,6 +74,17 @@
 			]
 		}
 	},
+	"GET /api/users/:username": {
+		"description": "serves a user selected by name",
+		"queries": [],
+		"exampleResponse": {
+			"user": {
+				"username": "rogersop",
+				"name": "paul",
+				"avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+			}
+		}
+	},
 	"POST /api/articles/:article_id/comments": {
 		"description": "inserts a new comment and responds with the posted comment",
 		"queries": [],

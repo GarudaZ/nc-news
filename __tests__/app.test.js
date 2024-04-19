@@ -328,6 +328,40 @@ describe("GET /api/users", () => {
 	});
 });
 
+describe("GET /api/users/:username", () => {
+	it("returns the correct user when passed a valid username", () => {
+		return request(app)
+			.get("/api/users/rogersop")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.user.username).toEqual("rogersop");
+			});
+	});
+	it("returns the correct user with the correct fields passed a valid username", () => {
+		return request(app)
+			.get("/api/users/rogersop")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.user.username).toEqual("rogersop");
+				expect(body.user.name).toEqual("paul");
+				expect(body.user.avatar_url).toEqual(
+					"https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+				);
+			});
+	});
+	describe("errors for GET /api/users/:username", () => {
+		test("returns a 404 not found when passed an id that does not exist", () => {
+			return request(app)
+				.get("/api/users/notauser")
+				.expect(404)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("username not found");
+				});
+		});
+	});
+});
+
 describe("POST /api/articles/:article_id/comments", () => {
 	it("POST 201 status code, inserts new comment and responds with posted comment", () => {
 		const newComment = {
