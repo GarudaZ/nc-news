@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { sort } = require("../db/data/test-data/articles");
 const { checkExists } = require("../db/seeds/utils");
 
 const selectArticleById = (id) => {
@@ -29,7 +30,45 @@ const selectArticleById = (id) => {
 		});
 };
 
-const selectArticles = (topic) => {
+const selectArticles = ({ topic, sort_by, order }) => {
+	if (!sort_by) {
+		sort_by = "created_at";
+	}
+
+	const validSortbys = [
+		"author",
+		"title",
+		"article_id",
+		"topic",
+		"created_at",
+		"votes",
+		"article_img_url",
+		"comment_count",
+	];
+	if (sort_by) {
+		if (!validSortbys.includes(sort_by)) {
+			return Promise.reject({
+				status: 400,
+				message: "invalid sort request",
+			});
+		}
+	}
+
+	if (!order) {
+		order = "desc";
+	}
+
+	const validOrders = ["asc", "desc"];
+
+	if (order) {
+		if (!validOrders.includes(order)) {
+			return Promise.reject({
+				status: 400,
+				message: "invalid order request",
+			});
+		}
+	}
+
 	let queryStr = `SELECT 
 	articles.author,
 	articles.title,
@@ -49,9 +88,9 @@ const selectArticles = (topic) => {
 	}
 
 	queryStr += `GROUP BY articles.article_id
-	ORDER BY created_at DESC`;
+	ORDER BY ${sort_by} ${order}`;
 
-	return checkExists("topics", "slug", topic) //could move to controller
+	return checkExists("topics", "slug", topic)
 		.then(() => {
 			return db.query(queryStr + `;`);
 		})
