@@ -4,7 +4,6 @@ const app = require("../app");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const endpointsSource = require("../endpoints.json");
-const selectUsers = require("../models/users.models");
 
 beforeEach(() => {
 	return seed(data);
