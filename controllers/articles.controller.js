@@ -1,3 +1,4 @@
+const { query } = require("../db/connection");
 const articles = require("../db/data/test-data/articles");
 const {
 	selectArticleById,
@@ -21,17 +22,14 @@ const getArticlesById = (req, res, next) => {
 };
 
 const getArticles = (req, res, next) => {
-	const { topic } = req.query;
-	return (
-		selectArticles(topic)
-			.then((articlesData) => {
-				res.status(200).send(articlesData);
-			})
-			// })
-			.catch((err) => {
-				next(err);
-			})
-	);
+	const { query } = req;
+	return selectArticles(query)
+		.then((articlesData) => {
+			res.status(200).send(articlesData);
+		})
+		.catch((err) => {
+			next(err);
+		});
 };
 
 const patchArticleVotesById = (req, res, next) => {

@@ -184,6 +184,52 @@ describe("GET/api/articles", () => {
 			});
 		});
 	});
+	describe("testing for sort_by query", () => {
+		it("returns articles sorted by a valid column", () => {
+			return request(app)
+				.get("/api/articles?sort_by=topic")
+				.expect(200)
+				.then(({ body }) => {
+					expect(body).toBeSortedBy("topic", { descending: true });
+				});
+		});
+		it("returns articles sorted by asc order when specified ", () => {
+			return request(app)
+				.get("/api/articles?order=asc")
+				.expect(200)
+				.then(({ body }) => {
+					expect(body).toBeSortedBy("created_at", { descending: false });
+				});
+		});
+		it("returns articles sorted by specified column and in asc order", () => {
+			return request(app)
+				.get("/api/articles?sort_by=author&order=asc")
+				.expect(200)
+				.then(({ body }) => {
+					expect(body).toBeSortedBy("author", { descending: false });
+				});
+		});
+		describe("errors for sort_by query", () => {
+			it("returns a 400 for an invalid column", () => {
+				return request(app)
+					.get("/api/articles?sort_by=notacolumn")
+					.expect(400)
+					.then(({ body }) => {
+						const { message } = body;
+						expect(message).toBe("invalid sort request");
+					});
+			});
+		});
+		it("returns a 400 for an invalid order", () => {
+			return request(app)
+				.get("/api/articles?order=notanorder")
+				.expect(400)
+				.then(({ body }) => {
+					const { message } = body;
+					expect(message).toBe("invalid order request");
+				});
+		});
+	});
 });
 
 describe("GET/api/articles/:article_id/comments", () => {
